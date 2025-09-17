@@ -213,93 +213,139 @@ void create_student_id() // Create new student ID
 {
     FILE *file;
     student new_student;
+    char line_buffer[MAX_BUFFER_SIZE];
+    char choice;
 
-    printf("===== Enter Student Information =====\n");
-    printf("=== ID: ");
-    scanf("%s", new_student.id);
+    do
+    {
+        printf("===== Enter Student Information =====\n");
+        printf("=== ID: ");
+        scanf("%s", new_student.id);
 
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF)
-        ;
+        // Check if ID already exists
+        file = fopen(FILENAME, "r");
+        if (file != NULL)
+        {
+            int exists = 0;
+            while (fgets(line_buffer, MAX_BUFFER_SIZE, file) != NULL)
+            {
+                student current_student;
+                sscanf(line_buffer, STUDENT_SCANF_FORMAT,
+                       current_student.id, current_student.name,
+                       &current_student.mark1, &current_student.mark2,
+                       &current_student.mark3, &current_student.a_mark,
+                       current_student.grade, &current_student.cgpa);
 
-    printf("=== Name: ");
-    fgets(new_student.name, sizeof(new_student.name), stdin);
+                if (strcmp(new_student.id, current_student.id) == 0)
+                {
+                    printf("Error: A student with ID %s already exists!\n", new_student.id);
+                    exists = 1;
+                    break;
+                }
+            }
+            fclose(file);
+            if (exists)
+            {
+                printf("Returning to Teacher Menu...\n\n");
+                return; // Stop function here
+            }
+        }
 
-    new_student.name[strcspn(new_student.name, "\n")] = '\0';
-    printf("=== Mark 1: ");
-    scanf("%d", &new_student.mark1);
+        int ch;
+        while ((ch = getchar()) != '\n' && ch != EOF)
+            ;
 
-    while ((ch = getchar()) != '\n' && ch != EOF)
-        ;
-    printf("=== Mark 2: ");
-    scanf("%d", &new_student.mark2);
-    while ((ch = getchar()) != '\n' && ch != EOF)
-        ;
-    printf("=== Mark 3: ");
-    scanf("%d", &new_student.mark3);
-    while ((ch = getchar()) != '\n' && ch != EOF)
-        ;
-    printf("\n");
+        printf("=== Name: ");
+        fgets(new_student.name, sizeof(new_student.name), stdin);
+        new_student.name[strcspn(new_student.name, "\n")] = '\0';
 
-    new_student.a_mark = (new_student.mark1 + new_student.mark2 + new_student.mark3) / 3;
+        printf("=== Mark 1: ");
+        scanf("%d", &new_student.mark1);
+        while ((ch = getchar()) != '\n' && ch != EOF)
+            ;
 
-    if (new_student.a_mark >= 93)
-    {
-        strcpy(new_student.grade, "A");
-        new_student.cgpa = 4.0;
-    }
-    else if (new_student.a_mark >= 90)
-    {
-        strcpy(new_student.grade, "A-");
-        new_student.cgpa = 3.7;
-    }
-    else if (new_student.a_mark >= 87)
-    {
-        strcpy(new_student.grade, "B+");
-        new_student.cgpa = 3.3;
-    }
-    else if (new_student.a_mark >= 83)
-    {
-        strcpy(new_student.grade, "B");
-        new_student.cgpa = 3.0;
-    }
-    else if (new_student.a_mark >= 80)
-    {
-        strcpy(new_student.grade, "B-");
-        new_student.cgpa = 2.7;
-    }
-    else if (new_student.a_mark >= 77)
-    {
-        strcpy(new_student.grade, "C");
-        new_student.cgpa = 2.3;
-    }
-    else if (new_student.a_mark >= 73)
-    {
-        strcpy(new_student.grade, "D");
-        new_student.cgpa = 2.0;
-    }
-    else if (new_student.a_mark >= 70)
-    {
-        strcpy(new_student.grade, "E");
-        new_student.cgpa = 1.7;
-    }
-    else
-    {
-        strcpy(new_student.grade, "F");
-        new_student.cgpa = 0.0;
-    }
+        printf("=== Mark 2: ");
+        scanf("%d", &new_student.mark2);
+        while ((ch = getchar()) != '\n' && ch != EOF)
+            ;
 
-    file = fopen(FILENAME, "a");
-    if (file == NULL)
-    {
-        printf("Could not open file for writing.");
-        return;
-    }
+        printf("=== Mark 3: ");
+        scanf("%d", &new_student.mark3);
+        while ((ch = getchar()) != '\n' && ch != EOF)
+            ;
 
-    fprintf(file, STUDENT_PRINTF_FORMAT, new_student.id, new_student.name, new_student.mark1, new_student.mark2, new_student.mark3, new_student.a_mark, new_student.grade, new_student.cgpa);
-    fclose(file);
+        new_student.a_mark = (new_student.mark1 + new_student.mark2 + new_student.mark3) / 3;
 
-    printf("==== Student added successfully! ====\n\n");
+        if (new_student.a_mark >= 93)
+        {
+            strcpy(new_student.grade, "A");
+            new_student.cgpa = 4.0;
+        }
+        else if (new_student.a_mark >= 90)
+        {
+            strcpy(new_student.grade, "A-");
+            new_student.cgpa = 3.7;
+        }
+        else if (new_student.a_mark >= 87)
+        {
+            strcpy(new_student.grade, "B+");
+            new_student.cgpa = 3.3;
+        }
+        else if (new_student.a_mark >= 83)
+        {
+            strcpy(new_student.grade, "B");
+            new_student.cgpa = 3.0;
+        }
+        else if (new_student.a_mark >= 80)
+        {
+            strcpy(new_student.grade, "B-");
+            new_student.cgpa = 2.7;
+        }
+        else if (new_student.a_mark >= 77)
+        {
+            strcpy(new_student.grade, "C");
+            new_student.cgpa = 2.3;
+        }
+        else if (new_student.a_mark >= 73)
+        {
+            strcpy(new_student.grade, "D");
+            new_student.cgpa = 2.0;
+        }
+        else if (new_student.a_mark >= 70)
+        {
+            strcpy(new_student.grade, "E");
+            new_student.cgpa = 1.7;
+        }
+        else
+        {
+            strcpy(new_student.grade, "F");
+            new_student.cgpa = 0.0;
+        }
+
+        file = fopen(FILENAME, "a");
+        if (file == NULL)
+        {
+            printf("Could not open file for writing.\n");
+            return;
+        }
+
+        fprintf(file, STUDENT_PRINTF_FORMAT,
+                new_student.id, new_student.name,
+                new_student.mark1, new_student.mark2, new_student.mark3,
+                new_student.a_mark, new_student.grade, new_student.cgpa);
+        fclose(file);
+
+        printf("==== Student added successfully! ====\n\n");
+
+        // Ask if teacher wants to add more
+        printf("Do you want to add another student? (y/n): ");
+        while ((ch = getchar()) != '\n' && ch != EOF)
+            ;
+        choice = getchar();
+
+    } while (choice == 'y' || choice == 'Y');
+
+    printf("Returning to Teacher Menu...\n\n");
 }
 
 void delete_student_id() // Delete existing student ID
